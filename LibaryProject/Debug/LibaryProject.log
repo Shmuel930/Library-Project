@@ -1,5 +1,2 @@
-﻿  Source.cpp
-c:\users\shmuel\desktop\study\computer sicence\libaryproject\libaryproject\source.cpp(12): warning C4101: 'y': unreferenced local variable
-c:\users\shmuel\desktop\study\computer sicence\libaryproject\libaryproject\source.cpp(11): warning C4101: 'x': unreferenced local variable
-  LibaryProject.vcxproj -> C:\Users\Shmuel\Desktop\Study\Computer Sicence\LibaryProject\Debug\LibaryProject.exe
+﻿  LibaryProject.vcxproj -> C:\Users\Shmuel\Desktop\Study\Computer Sicence\LibaryProject\Debug\LibaryProject.exe
   LibaryProject.vcxproj -> C:\Users\Shmuel\Desktop\Study\Computer Sicence\LibaryProject\Debug\LibaryProject.pdb (Full PDB)
