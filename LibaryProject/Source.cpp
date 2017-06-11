@@ -20,32 +20,45 @@ typedef struct booklist {
 } BOOKLIST;
 
 void UpdateMaxBooks(BOOKLIST books[], int BookNum) {
-
 	int CurrentMaxBooks = books[BookNum].numBooks_Max;
 	BOOK * newBookArray;
 	if (CurrentMaxBooks == 0) {
+		newBookArray = new (nothrow) BOOK[1];
 		books[BookNum].numBooks_Max = 1;
-		newBookArray = new BOOK[1];
 	}
 	else {
+		newBookArray = new (nothrow) BOOK[CurrentMaxBooks * 2];
+		if (!newBookArray) {
+			// check that theres enough space in memory for the array.
+			cout << "Not enough memory for new array.";
+			return;
+		}
 		books[BookNum].numBooks_Max = CurrentMaxBooks * 2;
-		newBookArray = new BOOK[CurrentMaxBooks * 2];
 	}
+
 
 	for (int i = 0; i < CurrentMaxBooks; i++) {
 		newBookArray[i] = books[BookNum].ptr[i];
 	}
 
-	delete[] books[BookNum].ptr;
+	delete[] books[BookNum].ptr; // delete the old array.
+	books[BookNum].ptr = newBookArray; // point the old array to the new array.
 
 }
 
 
 int main() {
 	BOOKLIST BookArray[26];
-	for (int i = 0; i < 26; i++)
+	for (int i = 0; i < 26; i++) {
 		BookArray[i].numBooks_Max = 0;
+		BookArray[i].ptr = new BOOK[0];
+	}
 
+	for (int i = 0; i < 100; i++) {
+		UpdateMaxBooks(BookArray, 2);
+		cout << i << endl;
+	}
+	UpdateMaxBooks(BookArray, 2);
 
 
 
