@@ -3,63 +3,112 @@ using namespace std;
 
 
 //Note: Remmber to use DELETE command to delete the heap memory. delete []arr.
-const int BOOK_NAME = 30;
+const int book_NAME = 30;
 const int AUTHOR = 20;
 
-typedef struct book {
-	char name[BOOK_NAME];
+ struct book {
+	char name[book_NAME];
 	char author[AUTHOR];
 	int numCopies;
 	double price;
-}BOOK;
+};
 
-typedef struct booklist {
-	BOOK * ptr;
-	int numBooks_Max;
-	int numBooks_Exist;
-} BOOKLIST;
+ struct booklist {
+	book * ptr;
+	int numbooks_Max;
+	int numbooks_Exist;
+};
 
-void UpdateMaxBooks(BOOKLIST books[], int BookNum) {
-	int CurrentMaxBooks = books[BookNum].numBooks_Max;
-	BOOK * newBookArray;
-	if (CurrentMaxBooks == 0) {
-		newBookArray = new (nothrow) BOOK[1];
-		books[BookNum].numBooks_Max = 1;
+void CompareName(char str1[], char str2[]) {
+
+}
+char LastNameLetter(char Name[]) {
+	int i = 0;
+	while (Name[i] != ' ')
+		i++;
+	return Name[i + 1];
+}
+int LengthOfArray(book* arr) {
+	return sizeof(arr) / sizeof(book);
+}
+void UpdateMaxbooks(booklist books[], int bookNum) {
+	int CurrentMaxbooks = books[bookNum].numbooks_Max;
+	book * newbookArray;
+	if (CurrentMaxbooks == 0) {
+		newbookArray = new (nothrow) book[1];
+		books[bookNum].numbooks_Max = 1;
 	}
 	else {
-		newBookArray = new (nothrow) BOOK[CurrentMaxBooks * 2];
-		if (!newBookArray) {
+		newbookArray = new (nothrow) book[CurrentMaxbooks * 2];
+		if (!newbookArray) {
 			// check that theres enough space in memory for the array.
 			cout << "Not enough memory for new array.";
 			return;
 		}
-		books[BookNum].numBooks_Max = CurrentMaxBooks * 2;
+		books[bookNum].numbooks_Max = CurrentMaxbooks * 2;
 	}
 
 
-	for (int i = 0; i < CurrentMaxBooks; i++) {
-		newBookArray[i] = books[BookNum].ptr[i];
+	for (int i = 0; i < CurrentMaxbooks; i++) {
+		newbookArray[i] = books[bookNum].ptr[i];
 	}
 
-	delete[] books[BookNum].ptr; // delete the old array.
-	books[BookNum].ptr = newBookArray; // point the old array to the new array.
+	delete[] books[bookNum].ptr; // delete the old array.
+	books[bookNum].ptr = newbookArray; // point the old array to the new array.
 
 }
+void purchasebook(booklist books[]) {
+	char NewbookName[book_NAME];
+	char NewbookAuthor[AUTHOR];
+	int numberOfNewbooks;
+	cout << "Please enter book name: ";
+	cin.getline(NewbookName, book_NAME);
+	cout << "Please enter author name: ";
+	cin.getline(NewbookAuthor, AUTHOR);
 
+	int ArrayIndex = LastNameLetter(NewbookName) - 'a';
+	for (int i = 0; i < LengthOfArray((books[ArrayIndex].ptr)); i++) {
+		// iteration of all books in booklist.
+		if (strcmp(books[ArrayIndex].ptr[i].name, NewbookName) == 0 && strcmp(books[ArrayIndex].ptr[i].author, NewbookAuthor))
+		{
+			// this is in case that the book is already exist.
+			cout << "Please enter how many books: ";
+			cin >> numberOfNewbooks;
+			if (numberOfNewbooks + books[ArrayIndex].numbooks_Exist > books[ArrayIndex].numbooks_Max)
+				UpdateMaxbooks(books, ArrayIndex);
+			books[ArrayIndex].ptr[i].numCopies += numberOfNewbooks;
+			return;
+		}
+	}
+
+
+	// if the book isnt exist and theres full books in booklist. double the space.
+	if (books[ArrayIndex].numbooks_Exist == books[ArrayIndex].numbooks_Max)
+		UpdateMaxbooks(books, ArrayIndex);
+
+	int index = 0;
+	while ()
+}
+
+void printbooks(booklist books[], char first) {
+	
+	for (int i = 0; i < 26; i++)
+		for (int j = 0; j < books[i].numbooks_Exist; j++)
+			if (books[i].ptr[j].author[0] == first) // if the first letter of the author is 'first' than print his book
+				cout << books[i].ptr[j].name << endl;
+	
+}
 
 int main() {
-	BOOKLIST BookArray[26];
+	booklist bookArray[26]; // the array index is the aothor Last name.
 	for (int i = 0; i < 26; i++) {
-		BookArray[i].numBooks_Max = 0;
-		BookArray[i].ptr = new BOOK[0];
+		bookArray[i].numbooks_Max = 0;
+		bookArray[i].ptr = new book[0];
 	}
+	UpdateMaxbooks(bookArray, 0);
+	UpdateMaxbooks(bookArray, 0);
+	UpdateMaxbooks(bookArray, 0);
 
-	for (int i = 0; i < 100; i++) {
-		UpdateMaxBooks(BookArray, 2);
-		cout << i << endl;
-	}
-	UpdateMaxBooks(BookArray, 2);
-
-
-
+	if (bookArray[0].ptr[0].name[0])
+		cout << "asdfasdf";
 }
