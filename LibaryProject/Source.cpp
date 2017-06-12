@@ -29,7 +29,7 @@ char LastNameLetter(char Name[]) {
 	return Name[i + 1];
 }
 int LengthOfArray(book* arr) {
-	return sizeof(arr) / sizeof(book);
+	return sizeof(arr) / sizeof(arr[0]);
 }
 void UpdateMaxbooks(booklist books[], int bookNum) {
 	int CurrentMaxbooks = books[bookNum].numbooks_Max;
@@ -61,21 +61,23 @@ void purchasebook(booklist books[]) {
 	char NewbookName[book_NAME];
 	char NewbookAuthor[AUTHOR];
 	int numberOfNewbooks;
+	int PriceOfNewBook;
 	cout << "Please enter book name: ";
 	cin.getline(NewbookName, book_NAME);
 	cout << "Please enter author name: ";
 	cin.getline(NewbookAuthor, AUTHOR);
 
-	int ArrayIndex = LastNameLetter(NewbookName) - 'a';
+	int ArrayIndex = LastNameLetter(NewbookAuthor) - 'a';
 	for (int i = 0; i < LengthOfArray((books[ArrayIndex].ptr)); i++) {
 		// iteration of all books in booklist.
-		if (strcmp(books[ArrayIndex].ptr[i].name, NewbookName) == 0 && strcmp(books[ArrayIndex].ptr[i].author, NewbookAuthor))
+		if (strcmp(books[ArrayIndex].ptr[i].name, NewbookName) == 0 && strcmp(books[ArrayIndex].ptr[i].author, NewbookAuthor) == 0)
 		{
 			// this is in case that the book is already exist.
 			cout << "Please enter how many books: ";
 			cin >> numberOfNewbooks;
 			if (numberOfNewbooks + books[ArrayIndex].numbooks_Exist > books[ArrayIndex].numbooks_Max)
 				UpdateMaxbooks(books, ArrayIndex);
+
 			books[ArrayIndex].ptr[i].numCopies += numberOfNewbooks;
 			return;
 		}
@@ -86,8 +88,21 @@ void purchasebook(booklist books[]) {
 	if (books[ArrayIndex].numbooks_Exist == books[ArrayIndex].numbooks_Max)
 		UpdateMaxbooks(books, ArrayIndex);
 
+
 	int index = 0;
-	while ()
+	while (books[ArrayIndex].ptr[index].name)
+		index++;
+
+	cout << "Please enter how many books: ";
+	cin >> numberOfNewbooks;
+	cout << "Please enter price ";
+	cin >> PriceOfNewBook;
+
+	strcpy_s(books[ArrayIndex].ptr[index].name, NewbookName);
+	strcpy_s(books[ArrayIndex].ptr[index].author, NewbookAuthor);
+	books[ArrayIndex].ptr[index].numCopies = numberOfNewbooks;
+	books[ArrayIndex].ptr[index].price = PriceOfNewBook;
+
 }
 
 void printbooks(booklist books[], char first) {
@@ -105,10 +120,6 @@ int main() {
 		bookArray[i].numbooks_Max = 0;
 		bookArray[i].ptr = new book[0];
 	}
-	UpdateMaxbooks(bookArray, 0);
-	UpdateMaxbooks(bookArray, 0);
-	UpdateMaxbooks(bookArray, 0);
 
-	if (bookArray[0].ptr[0].name[0])
-		cout << "asdfasdf";
+	purchasebook(bookArray);
 }
