@@ -148,6 +148,40 @@ void printAll(booklist books[]) {
 		if (bookCounter == 1) 
 			cout << "There is no books in the libary" << endl;
 
+} 
+void cheapest(booklist books[]) {
+	bool EmptyLibary = true;
+	int minPrice;
+	
+
+	for (int j = 0; j < 26; j++)
+		for (int i = 0; i < books[j].numbooks_Exist; i++) {
+			if (EmptyLibary) {
+				// if the first book is found
+				minPrice = books[j].ptr[i].price;
+				EmptyLibary = false;
+			}
+			if (books[j].ptr[i].price < minPrice)
+				minPrice = books[j].ptr[i].price;
+		}
+
+	if (EmptyLibary)
+		cout << "Library is empty" << endl;
+
+	else
+	{
+		cout << "Those books are the cheapest, with price of: " << minPrice << endl;
+		for (int j = 0; j < 26; j++)
+			for (int i = 0; i < books[j].numbooks_Exist; i++) {
+				if (books[j].ptr[i].price == minPrice)
+					cout << books[j].ptr[i].name << endl;
+			}
+	}
+
+}
+void removeBookCopy(booklist books[], char* author, char* bookName, int NumOfCopies)
+{
+
 }
 
 int main() {
@@ -157,6 +191,8 @@ int main() {
 		bookArray[i].numbooks_Exist = 0;
 		bookArray[i].ptr = new book[0];
 	}
-
+	int x = 5;
+	int *px = &x;
+	int **ppx = &px;
 
 }
