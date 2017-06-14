@@ -26,8 +26,10 @@ char LastNameLetter(char Name[]) {
 	int i = 0;
 	while (Name[i] != ' ')
 		i++;
-	return Name[i + 1];
+	//&&Ask raid if can use tolower.
+	return tolower(Name[i + 1]);
 }
+
 int LengthOfArray(book* arr) {
 	return sizeof(arr) / sizeof(arr[0]);
 }
@@ -46,35 +48,36 @@ void UpdateMaxbooks(booklist books[], int bookNum) {
 			return;
 		}
 		books[bookNum].numbooks_Max = CurrentMaxbooks * 2;
+
+		for (int i = 0; i < CurrentMaxbooks; i++) 
+			newbookArray[i] = books[bookNum].ptr[i];
+		
 	}
-
-
-	for (int i = 0; i < CurrentMaxbooks; i++) {
-		newbookArray[i] = books[bookNum].ptr[i];
-	}
-
 	delete[] books[bookNum].ptr; // delete the old array.
 	books[bookNum].ptr = newbookArray; // point the old array to the new array.
 
 }
 void purchasebook(booklist books[]) {
+
 	char NewbookName[book_NAME];
 	char NewbookAuthor[AUTHOR];
 	int numberOfNewbooks;
 	int PriceOfNewBook;
-	cout << "Please enter book name: ";
-	cin.getline(NewbookName, book_NAME);
 	cout << "Please enter author name: ";
 	cin.getline(NewbookAuthor, AUTHOR);
+	cout << "Please enter book name: ";
+	cin.getline(NewbookName, book_NAME);
+
 
 	int ArrayIndex = LastNameLetter(NewbookAuthor) - 'a';
-	for (int i = 0; i < LengthOfArray((books[ArrayIndex].ptr)); i++) {
+	for (int i = 0; i <books[ArrayIndex].numbooks_Exist; i++) {
 		// iteration of all books in booklist.
 		if (strcmp(books[ArrayIndex].ptr[i].name, NewbookName) == 0 && strcmp(books[ArrayIndex].ptr[i].author, NewbookAuthor) == 0)
 		{
 			// this is in case that the book is already exist.
 			cout << "Please enter how many books: ";
 			cin >> numberOfNewbooks;
+			cin.ignore();
 			if (numberOfNewbooks + books[ArrayIndex].numbooks_Exist > books[ArrayIndex].numbooks_Max)
 				UpdateMaxbooks(books, ArrayIndex);
 
@@ -89,37 +92,71 @@ void purchasebook(booklist books[]) {
 		UpdateMaxbooks(books, ArrayIndex);
 
 
-	int index = 0;
-	while (books[ArrayIndex].ptr[index].name)
-		index++;
-
 	cout << "Please enter how many books: ";
 	cin >> numberOfNewbooks;
-	cout << "Please enter price ";
+	cout << "Please enter price: ";
 	cin >> PriceOfNewBook;
+	cin.ignore(); // flush the newline out of the buffer
 
-	strcpy_s(books[ArrayIndex].ptr[index].name, NewbookName);
-	strcpy_s(books[ArrayIndex].ptr[index].author, NewbookAuthor);
-	books[ArrayIndex].ptr[index].numCopies = numberOfNewbooks;
-	books[ArrayIndex].ptr[index].price = PriceOfNewBook;
+
+	int InsertIndex = books[ArrayIndex].numbooks_Exist; // this is where the new book is gonna be inserted.
+
+	strcpy_s(books[ArrayIndex].ptr[InsertIndex].name, NewbookName);
+	strcpy_s(books[ArrayIndex].ptr[InsertIndex].author, NewbookAuthor);
+	books[ArrayIndex].ptr[InsertIndex].price = PriceOfNewBook;
+	books[ArrayIndex].ptr[InsertIndex].numCopies = numberOfNewbooks;
+	books[ArrayIndex].numbooks_Exist++;
+
+}
+void printBooks(booklist books[], char first) {
+	int ArrayIndex =(int)first - 'a';
+
+	if (books[ArrayIndex].numbooks_Exist == 0)
+		cout << "This author dosent have any book in the libary";
+	else
+	{
+		cout << "This are the books of the authors start with " << first << endl;
+		for (int i = 0; i < books[ArrayIndex].numbooks_Exist; i++)
+			cout << "(" << i+1 << ") " << books[ArrayIndex].ptr[i].name << endl;
+	}
+	
+}
+
+void printSortedBooks(booklist books[], char first) {
+	int ArrayIndex = (int)first - 'a';
+
+	if (books[ArrayIndex].numbooks_Exist == 0)
+		cout << "This author dosent have any book in the libary";
+	else
+	{
+		cout << "This are the books of the authors start with " << first << endl;
+		for (int i = 0; i < books[ArrayIndex].numbooks_Exist; i++)
+			cout << "(" << i + 1 << ") " << books[ArrayIndex].ptr[i].name << endl;
+	}
 
 }
 
-void printbooks(booklist books[], char first) {
-	
-	for (int i = 0; i < 26; i++)
-		for (int j = 0; j < books[i].numbooks_Exist; j++)
-			if (books[i].ptr[j].author[0] == first) // if the first letter of the author is 'first' than print his book
-				cout << books[i].ptr[j].name << endl;
-	
+void printAll(booklist books[]) {
+	int bookCounter = 1;
+
+		for (int j = 0; j < 26; j++)
+			for (int i = 0; i < books[j].numbooks_Exist; i++) {
+				cout << "(" << bookCounter << ") " << books[j].ptr[i].name << endl;
+				bookCounter++;
+			}
+
+		if (bookCounter == 1) 
+			cout << "There is no books in the libary" << endl;
+
 }
 
 int main() {
 	booklist bookArray[26]; // the array index is the aothor Last name.
 	for (int i = 0; i < 26; i++) {
 		bookArray[i].numbooks_Max = 0;
+		bookArray[i].numbooks_Exist = 0;
 		bookArray[i].ptr = new book[0];
 	}
 
-	purchasebook(bookArray);
+
 }
