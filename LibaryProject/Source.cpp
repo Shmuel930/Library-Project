@@ -122,17 +122,7 @@ void printBooks(booklist books[], char first) {
 	
 }
 
-void printSortedBooks(booklist books[], char first) {
-	int ArrayIndex = (int)first - 'a';
-
-	if (books[ArrayIndex].numbooks_Exist == 0)
-		cout << "This author dosent have any book in the libary";
-	else
-	{
-		cout << "This are the books of the authors start with " << first << endl;
-		for (int i = 0; i < books[ArrayIndex].numbooks_Exist; i++)
-			cout << "(" << i + 1 << ") " << books[ArrayIndex].ptr[i].name << endl;
-	}
+void printSortedBooks(booklist books[]) {
 
 }
 
@@ -151,7 +141,7 @@ void printAll(booklist books[]) {
 } 
 void cheapest(booklist books[]) {
 	bool EmptyLibary = true;
-	int minPrice;
+	double minPrice;
 	
 
 	for (int j = 0; j < 26; j++)
@@ -184,6 +174,82 @@ void removeBookCopy(booklist books[], char* author, char* bookName, int NumOfCop
 
 }
 
+int numCopies(booklist books[], char* Word) {
+
+	int cntCopies =0;
+	for (int j = 0; j < 26; j++)
+		for (int i = 0; i < books[j].numbooks_Exist; i++)
+			if (strstr(books[j].ptr[i].name, Word) != NULL)
+				cntCopies += books[j].ptr[i].numCopies;
+
+	return cntCopies;
+}
+
+void LibraryMenu(booklist books[]) {
+	int UserOption;
+	system("CLS");
+	cout << "(1) Purchase Book " << endl;
+	cout << "(2) Print Books" << endl;
+	cout << "(3) Print Sorted Books" << endl;
+	cout << "(4) Print All" << endl;
+	cout << "(5) Cheapest books " << endl;
+	cout << "(6) Remove Book Copy " << endl;
+	cout << "(7)  NumCopies " << endl;
+	cin >> UserOption;
+
+	while (UserOption < 1 || UserOption >7)
+		cin >> UserOption;
+
+	cin.ignore();
+	switch (UserOption)
+	{
+	case 1:
+		system("CLS");
+		purchasebook(books);
+		break;
+
+	case 2:
+		system("CLS");
+		char first;
+		cout << "Enter first char of author last name";
+		cin >> first;
+		printBooks(books, first);
+		system("Pause");
+		break;
+
+	case 3:
+		system("CLS");
+		printSortedBooks(books);
+		system("Pause");
+		break;
+
+	case 4:
+		system("CLS");
+		printAll(books);
+		system("Pause");
+		break;
+
+	case 5:
+		system("CLS");
+		cheapest(books);
+		system("Pause");
+		break;
+		
+	case 6:
+		system("CLS");
+		break;
+		
+	case 7:
+		system("CLS");
+		char* word = new char[30];
+		cout << "Please enter the name of the book: ";
+		cin >> word;
+		cout << "Number of copies: " << numCopies(books, word) << endl;;
+		system("Pause");
+		break;
+
+	}
+}
 int main() {
 	booklist bookArray[26]; // the array index is the aothor Last name.
 	for (int i = 0; i < 26; i++) {
@@ -191,8 +257,8 @@ int main() {
 		bookArray[i].numbooks_Exist = 0;
 		bookArray[i].ptr = new book[0];
 	}
-	int x = 5;
-	int *px = &x;
-	int **ppx = &px;
+	while (true)
+	LibraryMenu(bookArray);
+
 
 }
