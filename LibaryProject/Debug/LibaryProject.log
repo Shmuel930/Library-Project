@@ -1,3 +1,4 @@
 ﻿  Source.cpp
+c:\users\shmuel\desktop\study\computer sicence\libaryproject\libaryproject\source.cpp(398): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   LibaryProject.vcxproj -> C:\Users\Shmuel\Desktop\Study\Computer Sicence\LibaryProject\Debug\LibaryProject.exe
   LibaryProject.vcxproj -> C:\Users\Shmuel\Desktop\Study\Computer Sicence\LibaryProject\Debug\LibaryProject.pdb (Full PDB)

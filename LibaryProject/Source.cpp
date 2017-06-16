@@ -1,10 +1,12 @@
 #include <iostream>
+#include <time.h> 
 using namespace std;
 
 
 //Note: Remmber to use DELETE command to delete the heap memory. delete []arr.
 const int book_NAME = 30;
 const int AUTHOR = 20;
+const int MAX_BOOKS = 26;
 
  struct book {
 	char name[book_NAME];
@@ -19,8 +21,15 @@ const int AUTHOR = 20;
 	int numbooks_Exist;
 };
 
-void CompareName(char str1[], char str2[]) {
+bool CompareName(char str1[], char str2[]) {
+	int i = 0;
 
+	while (str1[i] != '\0' || str2[i] != '\0') {
+		if (tolower(str1[i]) != tolower(str2[i]))
+			return false;
+		i++;
+	}
+	return true;
 }
 char LastNameLetter(char Name[]) {
 	int i = 0;
@@ -30,9 +39,6 @@ char LastNameLetter(char Name[]) {
 	return tolower(Name[i + 1]);
 }
 
-int LengthOfArray(book* arr) {
-	return sizeof(arr) / sizeof(arr[0]);
-}
 void UpdateMaxbooks(booklist books[], int bookNum) {
 	int CurrentMaxbooks = books[bookNum].numbooks_Max;
 	book * newbookArray;
@@ -72,7 +78,7 @@ void purchasebook(booklist books[]) {
 	int ArrayIndex = LastNameLetter(NewbookAuthor) - 'a';
 	for (int i = 0; i <books[ArrayIndex].numbooks_Exist; i++) {
 		// iteration of all books in booklist.
-		if (strcmp(books[ArrayIndex].ptr[i].name, NewbookName) == 0 && strcmp(books[ArrayIndex].ptr[i].author, NewbookAuthor) == 0)
+		if (CompareName(books[ArrayIndex].ptr[i].name, NewbookName) && CompareName(books[ArrayIndex].ptr[i].author, NewbookAuthor))
 		{
 			// this is in case that the book is already exist.
 			cout << "Please enter how many books: ";
@@ -109,27 +115,42 @@ void purchasebook(booklist books[]) {
 
 }
 void printBooks(booklist books[], char first) {
-	int ArrayIndex =(int)first - 'a';
+	int ArrayIndex = tolower(first) - 'a';
 
 	if (books[ArrayIndex].numbooks_Exist == 0)
 		cout << "This author dosent have any book in the libary";
 	else
 	{
-		cout << "This are the books of the authors start with " << first << endl;
+		cout << "These are the books of the authors start with " << first << endl;
 		for (int i = 0; i < books[ArrayIndex].numbooks_Exist; i++)
 			cout << "(" << i+1 << ") " << books[ArrayIndex].ptr[i].name << endl;
 	}
 	
 }
+void printSortedBooks(booklist books[], char first) {
+	int IndexArray = first - 'a';
+	int NumberOfBooks = books[IndexArray].numbooks_Exist;
+	int InsertIndex = 0;
+	book *SortedArray = new book[NumberOfBooks];
 
-void printSortedBooks(booklist books[]) {
+	for (int i = 0; i < NumberOfBooks; i++) {
+		for (int j = 0; j < NumberOfBooks; j++) {
+			if (strcmp(books[IndexArray].ptr[i].name, books[IndexArray].ptr[j].name) > 0)
+				InsertIndex++;
+		}
+		SortedArray[InsertIndex] = books[IndexArray].ptr[i];
+		InsertIndex = 0;
+	}
 
+	cout << "Sorted Books: " << endl;
+	for (int i = 0; i < NumberOfBooks; i++) {
+		cout << SortedArray[i].name << endl;
+	}
 }
-
 void printAll(booklist books[]) {
 	int bookCounter = 1;
 
-		for (int j = 0; j < 26; j++)
+		for (int j = 0; j < MAX_BOOKS; j++)
 			for (int i = 0; i < books[j].numbooks_Exist; i++) {
 				cout << "(" << bookCounter << ") " << books[j].ptr[i].name << endl;
 				bookCounter++;
@@ -144,7 +165,7 @@ void cheapest(booklist books[]) {
 	double minPrice;
 	
 
-	for (int j = 0; j < 26; j++)
+	for (int j = 0; j < MAX_BOOKS; j++)
 		for (int i = 0; i < books[j].numbooks_Exist; i++) {
 			if (EmptyLibary) {
 				// if the first book is found
@@ -161,7 +182,7 @@ void cheapest(booklist books[]) {
 	else
 	{
 		cout << "Those books are the cheapest, with price of: " << minPrice << endl;
-		for (int j = 0; j < 26; j++)
+		for (int j = 0; j < MAX_BOOKS; j++)
 			for (int i = 0; i < books[j].numbooks_Exist; i++) {
 				if (books[j].ptr[i].price == minPrice)
 					cout << books[j].ptr[i].name << endl;
@@ -171,13 +192,31 @@ void cheapest(booklist books[]) {
 }
 void removeBookCopy(booklist books[], char* author, char* bookName, int NumOfCopies)
 {
+	int ArrayIndex = LastNameLetter(author)-'a';
+	int NumberOfBooks = books[ArrayIndex].numbooks_Exist;
+	
+	for (int i = 0; i < NumberOfBooks; i++) {
+		if (CompareName(bookName, books[ArrayIndex].ptr[i].name))
+		{
+			if (books[ArrayIndex].ptr[i].numCopies - NumOfCopies > 0) {
+				books[ArrayIndex].ptr[i].numCopies -= NumOfCopies;
+				return;
+			}
+			else
+			{
+				for (int j = i; j < NumberOfBooks-1; j++)
+				books[ArrayIndex].ptr[j] = books[ArrayIndex].ptr[j + 1];
 
+				books[ArrayIndex].numbooks_Exist--;
+			}
+			break;
+		}
+	}
 }
-
 int numCopies(booklist books[], char* Word) {
 
 	int cntCopies =0;
-	for (int j = 0; j < 26; j++)
+	for (int j = 0; j < MAX_BOOKS; j++)
 		for (int i = 0; i < books[j].numbooks_Exist; i++)
 			if (strstr(books[j].ptr[i].name, Word) != NULL)
 				cntCopies += books[j].ptr[i].numCopies;
@@ -187,6 +226,7 @@ int numCopies(booklist books[], char* Word) {
 
 void LibraryMenu(booklist books[]) {
 	int UserOption;
+	char author;
 	system("CLS");
 	cout << "(1) Purchase Book " << endl;
 	cout << "(2) Print Books" << endl;
@@ -194,13 +234,16 @@ void LibraryMenu(booklist books[]) {
 	cout << "(4) Print All" << endl;
 	cout << "(5) Cheapest books " << endl;
 	cout << "(6) Remove Book Copy " << endl;
-	cout << "(7)  NumCopies " << endl;
+	cout << "(7) number of Copeis" << endl;
 	cin >> UserOption;
 
-	while (UserOption < 1 || UserOption >7)
+	while (UserOption < 1 || UserOption >7) {
+		cout << "Please enter valid option." << endl;
 		cin >> UserOption;
+	}
 
 	cin.ignore();
+
 	switch (UserOption)
 	{
 	case 1:
@@ -211,7 +254,7 @@ void LibraryMenu(booklist books[]) {
 	case 2:
 		system("CLS");
 		char first;
-		cout << "Enter first char of author last name";
+		cout << "Enter first char of author last name: ";
 		cin >> first;
 		printBooks(books, first);
 		system("Pause");
@@ -219,7 +262,9 @@ void LibraryMenu(booklist books[]) {
 
 	case 3:
 		system("CLS");
-		printSortedBooks(books);
+		cout << "Enter letter of author: ";
+		cin >> author;
+		printSortedBooks(books,author);
 		system("Pause");
 		break;
 
@@ -237,28 +282,43 @@ void LibraryMenu(booklist books[]) {
 		
 	case 6:
 		system("CLS");
+		cout << "Remove book by name." << endl;
+		char bookName[book_NAME];
+		char bookAuthor[AUTHOR];
+		int numberofcopies;
+		cout << "Please enter author name: ";
+		cin.getline(bookAuthor, AUTHOR);
+		cout << "Please enter book name: ";
+		cin.getline(bookName, book_NAME);
+		cout << "Please enter number of copies: ";
+		cin >> numberofcopies;
+		cin.ignore();
+		removeBookCopy(books, bookAuthor, bookName, numberofcopies);
 		break;
-		
 	case 7:
 		system("CLS");
+		
 		char* word = new char[30];
-		cout << "Please enter the name of the book: ";
+		cout << "Number of copies !" << endl<<"Please enter the name of the book : ";
 		cin >> word;
 		cout << "Number of copies: " << numCopies(books, word) << endl;;
 		system("Pause");
 		break;
 
+
 	}
 }
+
+
 int main() {
-	booklist bookArray[26]; // the array index is the aothor Last name.
-	for (int i = 0; i < 26; i++) {
+	booklist bookArray[MAX_BOOKS]; // the array index is the aothor Last name.
+	for (int i = 0; i < MAX_BOOKS; i++) {
 		bookArray[i].numbooks_Max = 0;
 		bookArray[i].numbooks_Exist = 0;
 		bookArray[i].ptr = new book[0];
 	}
+
 	while (true)
 	LibraryMenu(bookArray);
-
 
 }
