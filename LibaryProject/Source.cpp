@@ -1,9 +1,14 @@
 #include <iostream>
-#include <time.h> 
 using namespace std;
 
+/*
+Project number 3, Libray project.
 
-//Note: Remmber to use DELETE command to delete the heap memory. delete []arr.
+Made by:
+Shmuel Cohen, ID:313326258
+Eran Atia,	  ID:204122055
+
+*/
 const int book_NAME = 30;
 const int AUTHOR = 20;
 const int MAX_BOOKS = 26;
@@ -14,34 +19,42 @@ const int MAX_BOOKS = 26;
 	int numCopies;
 	double price;
 };
-
  struct booklist {
 	book * ptr;
 	int numbooks_Max;
 	int numbooks_Exist;
 };
 
-bool CompareName(char str1[], char str2[]) {
-	int i = 0;
-
-	while (str1[i] != '\0' || str2[i] != '\0') {
-		if (tolower(str1[i]) != tolower(str2[i]))
-			return false;
-		i++;
-	}
-	return true;
-}
 char LastNameLetter(char Name[]) {
+	// get a string and return the last name letter of the author.
 	int i = 0;
 	while (Name[i] != ' ')
 		i++;
-	//&&Ask raid if can use tolower.
+
 	return tolower(Name[i + 1]);
 }
+int MyStrCmp(char str1[], char str2[]) {
+	// return -1 if str1 < str2 (by alfabetic order).
+	// return 0 is str1 equals str2.
+	// return 1 if str1 > str2.
+	// all of thoes without case sensetive.
 
+	int i = 0;
+	while (str1[i] != '\0' || str2[i] != '\0')
+	{
+		if (tolower(str1[i]) < tolower(str2[i]))
+			return -1;
+		if ((tolower(str1[i]) > tolower(str2[i])))
+			return 1;
+		i++;
+	}
+
+	return 0;
+}
 void UpdateMaxbooks(booklist books[], int bookNum) {
 	int CurrentMaxbooks = books[bookNum].numbooks_Max;
 	book * newbookArray;
+	// if theres no books, then the max books is 1.
 	if (CurrentMaxbooks == 0) {
 		newbookArray = new (nothrow) book[1];
 		books[bookNum].numbooks_Max = 1;
@@ -78,7 +91,7 @@ void purchasebook(booklist books[]) {
 	int ArrayIndex = LastNameLetter(NewbookAuthor) - 'a';
 	for (int i = 0; i <books[ArrayIndex].numbooks_Exist; i++) {
 		// iteration of all books in booklist.
-		if (CompareName(books[ArrayIndex].ptr[i].name, NewbookName) && CompareName(books[ArrayIndex].ptr[i].author, NewbookAuthor))
+		if (MyStrCmp(books[ArrayIndex].ptr[i].name, NewbookName) == 0  && MyStrCmp(books[ArrayIndex].ptr[i].author, NewbookAuthor) == 0)
 		{
 			// this is in case that the book is already exist.
 			cout << "Please enter how many books: ";
@@ -128,14 +141,20 @@ void printBooks(booklist books[], char first) {
 	
 }
 void printSortedBooks(booklist books[], char first) {
-	int IndexArray = first - 'a';
+	
+	int IndexArray = tolower(first) - 'a';
 	int NumberOfBooks = books[IndexArray].numbooks_Exist;
-	int InsertIndex = 0;
+	if (NumberOfBooks == 0) {
+		cout << "The author has no books !\n";
+		return;
+	}
+	int InsertIndex = 0; //
 	book *SortedArray = new book[NumberOfBooks];
 
+	// loop all the books and instert them to the SortedArray by the value.
 	for (int i = 0; i < NumberOfBooks; i++) {
 		for (int j = 0; j < NumberOfBooks; j++) {
-			if (strcmp(books[IndexArray].ptr[i].name, books[IndexArray].ptr[j].name) > 0)
+			if (MyStrCmp(books[IndexArray].ptr[i].name,books[IndexArray].ptr[j].name) > 0)
 				InsertIndex++;
 		}
 		SortedArray[InsertIndex] = books[IndexArray].ptr[i];
@@ -146,8 +165,12 @@ void printSortedBooks(booklist books[], char first) {
 	for (int i = 0; i < NumberOfBooks; i++) {
 		cout << SortedArray[i].name << endl;
 	}
+
+	delete[] SortedArray; // free the memory after using the array.
 }
 void printAll(booklist books[]) {
+	// print all the books in the libary.
+
 	int bookCounter = 1;
 
 		for (int j = 0; j < MAX_BOOKS; j++)
@@ -161,6 +184,8 @@ void printAll(booklist books[]) {
 
 } 
 void cheapest(booklist books[]) {
+	// print the cheapest books in the libary.
+
 	bool EmptyLibary = true;
 	double minPrice;
 	
@@ -196,8 +221,10 @@ void removeBookCopy(booklist books[], char* author, char* bookName, int NumOfCop
 	int NumberOfBooks = books[ArrayIndex].numbooks_Exist;
 	
 	for (int i = 0; i < NumberOfBooks; i++) {
-		if (CompareName(bookName, books[ArrayIndex].ptr[i].name))
+		if (MyStrCmp(bookName, books[ArrayIndex].ptr[i].name) == 0 )
 		{
+			// if theres a match between the books.
+
 			if (books[ArrayIndex].ptr[i].numCopies - NumOfCopies > 0) {
 				books[ArrayIndex].ptr[i].numCopies -= NumOfCopies;
 				return;
@@ -214,6 +241,7 @@ void removeBookCopy(booklist books[], char* author, char* bookName, int NumOfCop
 	}
 }
 int numCopies(booklist books[], char* Word) {
+	// return the number of copies of book.
 
 	int cntCopies =0;
 	for (int j = 0; j < MAX_BOOKS; j++)
@@ -225,6 +253,8 @@ int numCopies(booklist books[], char* Word) {
 }
 
 void LibraryMenu(booklist books[]) {
+	// this is custom made menu that can acess all the functions.
+
 	int UserOption;
 	char author;
 	system("CLS");
@@ -235,9 +265,10 @@ void LibraryMenu(booklist books[]) {
 	cout << "(5) Cheapest books " << endl;
 	cout << "(6) Remove Book Copy " << endl;
 	cout << "(7) number of Copeis" << endl;
+	cout << "(8) Exit" << endl;
 	cin >> UserOption;
 
-	while (UserOption < 1 || UserOption >7) {
+	while (UserOption < 1 || UserOption >8) {
 		cout << "Please enter valid option." << endl;
 		cin >> UserOption;
 	}
@@ -264,7 +295,7 @@ void LibraryMenu(booklist books[]) {
 		system("CLS");
 		cout << "Enter letter of author: ";
 		cin >> author;
-		printSortedBooks(books,author);
+		printSortedBooks(books, author);
 		system("Pause");
 		break;
 
@@ -279,7 +310,7 @@ void LibraryMenu(booklist books[]) {
 		cheapest(books);
 		system("Pause");
 		break;
-		
+
 	case 6:
 		system("CLS");
 		cout << "Remove book by name." << endl;
@@ -295,15 +326,21 @@ void LibraryMenu(booklist books[]) {
 		cin.ignore();
 		removeBookCopy(books, bookAuthor, bookName, numberofcopies);
 		break;
-	case 7:
+
+	case 7:{
 		system("CLS");
-		
+
 		char* word = new char[30];
-		cout << "Number of copies !" << endl<<"Please enter the name of the book : ";
+		cout << "Number of copies !" << endl << "Please enter the name of the book : ";
 		cin >> word;
 		cout << "Number of copies: " << numCopies(books, word) << endl;;
+		delete[] word; // free the memory after using the array.
 		system("Pause");
 		break;
+	}
+			case 8:
+			exit(0);
+			break;
 
 
 	}
